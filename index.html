@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>Paises en texto</title>
+</head>
+
+<body>
+    <h1>Buscador de paises en texto</h1>
+    <textarea id="entrada" style="width: 100%; height: 200px;"></textarea><br>
+    <button onclick="buscarPaises()">BUSCAR PAISES</button><br>
+    PAISES ENCONTRADOS:
+    <p id="lista"></p>
+
+    <script>
+        var lista = [];
+        lista.length
+
+        fetch('https://restcountries.eu/rest/v2/all')
+            .then(response => {
+                return response.json()
+            })
+            .then(data => {
+                for (var i = 0; i < data.length; i++) {
+                    //console.log(data[i].translations.es);
+                    if (data[i].translations.es != null)
+                        lista.push(sinTildes(data[i].translations.es));
+                }
+            })
+            .catch(err => {
+                // Do something for an error here
+            })
+
+        function sinTildes(texto) {
+            texto = texto.replace('á', 'a');
+            texto = texto.replace('é', 'e');
+            texto = texto.replace('í', 'i');
+            texto = texto.replace('ó', 'o');
+            texto = texto.replace('ú', 'u');
+            return texto;
+        }
+
+        function buscarPaises() {
+            console.log("Buscar paises");
+            var texto = document.getElementById("entrada").value;
+            texto = texto.trim();
+            texto = texto.replace(/\s+/g, '');
+            texto = texto.toLowerCase();
+
+            var resultado = [];
+            let n = 1;
+            for (var i = 0; i < lista.length; i++) {
+                var x = texto.search(lista[i].toLowerCase());
+                //console.log(lista[i].toLowerCase() + " -> " + x);
+                if (x >= 0) {
+                    resultado.push(n + " " + lista[i]);
+                    n += 1;
+                }
+            }
+
+            document.getElementById("lista").innerText = resultado.join().replace(/,/g, '\n');
+        }
+
+    </script>
+</body>
+
+</html>
